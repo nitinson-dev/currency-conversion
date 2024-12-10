@@ -24,6 +24,7 @@ public class ExchangeRateService {
 
     @Cacheable("rates")
     public BigDecimal getExchangeRate(String from, String to) {
+        System.out.println("Fetching exchange rates from API...");
         String currencyPair = from + "_" + to;
         Optional<ExchangeRate> exchangeRate = repository.findById(currencyPair);
 
