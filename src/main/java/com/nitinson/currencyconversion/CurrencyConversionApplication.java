@@ -2,12 +2,14 @@ package com.nitinson.currencyconversion;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
-public class CurrencyConvertorApplication {
+@EnableScheduling
+public class CurrencyConversionApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(CurrencyConvertorApplication.class, args);
+        SpringApplication.run(CurrencyConversionApplication.class, args);
     }
 
 }

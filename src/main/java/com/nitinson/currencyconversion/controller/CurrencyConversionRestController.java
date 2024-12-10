@@ -7,29 +7,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
+import java.math.BigDecimal;
 
 @RestController
 @RequestMapping("/api/currency")
 public class CurrencyConversionRestController {
 
-    private final CurrencyConversionService currencyConversionService;
+    private final CurrencyConversionService conversionService;
 
     @Autowired
-    public CurrencyConversionRestController(CurrencyConversionService currencyConversionService) {
-        this.currencyConversionService = currencyConversionService;
+    public CurrencyConversionRestController(CurrencyConversionService conversionService) {
+        this.conversionService = conversionService;
     }
 
     @GetMapping("/convert")
-    public double convertCurrency(@RequestParam String fromCurrency,
-                                  @RequestParam String toCurrency,
-                                  @RequestParam double amount) {
-        return currencyConversionService.convertCurrency(fromCurrency, toCurrency, amount);
-    }
-
-    @GetMapping("/rates")
-    public Map<String, Double> getExchangeRates(@RequestParam String baseCurrency) {
-        return currencyConversionService.getExchangeRates(baseCurrency).getRates();
+    public BigDecimal convert(@RequestParam String from, @RequestParam String to, @RequestParam BigDecimal amount) {
+        return conversionService.convertCurrency(from, to, amount);
     }
 
 }

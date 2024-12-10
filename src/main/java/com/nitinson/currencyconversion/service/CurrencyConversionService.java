@@ -1,36 +1,24 @@
 package com.nitinson.currencyconversion.service;
 
-import com.nitinson.currencyconversion.model.CurrencyRate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
+
+import java.math.BigDecimal;
 
 @Service
 public class CurrencyConversionService {
 
-    private final RestTemplate restTemplate;
 
-    @Value("${ecb.api.url}")
-    private String ecbApiUrl;
+    private final ExchangeRateService rateService;
 
-    public CurrencyConversionService(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;
+    @Autowired
+    public CurrencyConversionService(ExchangeRateService rateService) {
+        this.rateService = rateService;
     }
 
-    public CurrencyRate getExchangeRates(String baseCurrency) {
-        String url = String.format("%s?base=%s", ecbApiUrl, baseCurrency);
-        return restTemplate.getForObject(url, CurrencyRate.class);
-    }
-
-    public double convertCurrency(String fromCurrency, String toCurrency, double amount) {
-        CurrencyRate rates = getExchangeRates(fromCurrency);
-        Double exchangeRate = rates.getRates().get(toCurrency);
-
-        if (exchangeRate == null) {
-            throw new IllegalArgumentException("Invalid target currency");
-        }
-
-        return amount * exchangeRate;
+    public BigDecimal convertCurrency(String from, String to, BigDecimal amount) {
+        BigDecimal rate = rateService.getExchangeRate(from, to);
+        return amount.multiply(rate);
     }
 }
+
