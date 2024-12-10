@@ -50,12 +50,13 @@ public class ExchangeRateUpdateService {
                 // Convert rates to BigDecimal
                 Map<String, BigDecimal> rates = new HashMap<>();
                 rawRates.forEach((currency, value) -> {
+                    String currencyPair = currency.concat("_EUR");
                     if (value instanceof Integer) {
-                        rates.put(currency, BigDecimal.valueOf((Integer) value));
+                        rates.put(currencyPair, BigDecimal.valueOf((Integer) value));
                     } else if (value instanceof Double) {
-                        rates.put(currency, BigDecimal.valueOf((Double) value));
+                        rates.put(currencyPair, BigDecimal.valueOf((Double) value));
                     } else if (value instanceof BigDecimal) {
-                        rates.put(currency, (BigDecimal) value);
+                        rates.put(currencyPair, (BigDecimal) value);
                     }
                 });
 
