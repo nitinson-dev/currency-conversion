@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 @Service
 public class CurrencyConversionService {
@@ -19,6 +20,10 @@ public class CurrencyConversionService {
     public BigDecimal convertCurrency(String from, String to, BigDecimal amount) {
         BigDecimal rate = rateService.getExchangeRate(from, to);
         return amount.multiply(rate);
+    }
+
+    public Map<String, BigDecimal> getExchangeRates() {
+        return rateService.getAllExchangeRates();
     }
 }
 

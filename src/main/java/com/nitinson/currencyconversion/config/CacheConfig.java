@@ -6,12 +6,12 @@ import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
-@EnableCaching
+//@Configuration
+//@EnableCaching
 public class CacheConfig {
-    @Bean
+//    @Bean
     public CacheManager cacheManager() {
-        return new ConcurrentMapCacheManager("rates");
+        return new ConcurrentMapCacheManager("rate");
     }
 }
 
