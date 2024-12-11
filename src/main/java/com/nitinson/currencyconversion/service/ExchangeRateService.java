@@ -63,6 +63,11 @@ public class ExchangeRateService {
                 }).toList();
 
         repository.saveAll(rateEntities);
+
+        if (cacheManager.getCache("exchangeRates") != null) {
+            cacheManager.getCache("exchangeRates").put("rates", rates);
+            System.out.println("Cache updated with new rates.");
+        }
     }
 
     @Cacheable(value = "exchangeRates", key = "'rates'", unless = "#result == null")
