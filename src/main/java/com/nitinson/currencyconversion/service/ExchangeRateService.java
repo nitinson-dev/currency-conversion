@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -33,7 +34,7 @@ public class ExchangeRateService {
         String currencyPair = from + "_" + to;
 
         Map<String, BigDecimal> cachedRates = getAllExchangeRatesFromCache();
-        if (cachedRates != null) {
+        if (!cachedRates.isEmpty() || cachedRates.get(currencyPair) != null) {
             return cachedRates.get(currencyPair);
         }
         // Fallback to fetch all rates and retrieve the specific currency
@@ -46,9 +47,21 @@ public class ExchangeRateService {
 
     private Map<String, BigDecimal> getAllExchangeRatesFromCache() {
         // Retrieve the map directly from the cache
-        return (Map<String, BigDecimal>) cacheManager.getCache("exchangeRates")
-                .get("rates")
-                .get();
+        //return (Map<String, BigDecimal>) cacheManager.getCache("exchangeRates").get("rates").get();
+
+        // Check if the cache exists and contains the key
+        if (cacheManager.getCache("exchangeRates") != null) {
+            var cacheValue = cacheManager.getCache("exchangeRates").get("rates");
+            if (cacheValue != null) {
+                Object value = cacheValue.get();
+                if (value instanceof Map<?, ?>) {
+                    // Safe unchecked cast with runtime type check
+                    return (Map<String, BigDecimal>) value;
+                }
+            }
+        }
+        // Return an empty map or other default value if the cache is empty or null
+        return Collections.emptyMap();
     }
 
     @CacheEvict(value = "exchangeRates", allEntries = true)
@@ -63,11 +76,6 @@ public class ExchangeRateService {
                 }).toList();
 
         repository.saveAll(rateEntities);
-
-        if (cacheManager.getCache("exchangeRates") != null) {
-            cacheManager.getCache("exchangeRates").put("rates", rates);
-            System.out.println("Cache updated with new rates.");
-        }
     }
 
     @Cacheable(value = "exchangeRates", key = "'rates'", unless = "#result == null")
