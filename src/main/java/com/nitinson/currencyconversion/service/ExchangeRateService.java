@@ -23,10 +23,13 @@ public class ExchangeRateService {
 
     private final CacheManager cacheManager;
 
+    private final CacheAccessTracker cacheAccessTracker;
+
     @Autowired
-    public ExchangeRateService(CurrencyConversionRepository repository, CacheManager cacheManager) {
+    public ExchangeRateService(CurrencyConversionRepository repository, CacheManager cacheManager, CacheAccessTracker cacheAccessTracker) {
         this.repository = repository;
         this.cacheManager = cacheManager;
+        this.cacheAccessTracker = cacheAccessTracker;
     }
 
     //@Cacheable("rate")
@@ -35,6 +38,7 @@ public class ExchangeRateService {
 
         Map<String, BigDecimal> cachedRates = getAllExchangeRatesFromCache();
         if (!cachedRates.isEmpty() || cachedRates.get(currencyPair) != null) {
+            cacheAccessTracker.incrementAccessCount();
             return cachedRates.get(currencyPair);
         }
         // Fallback to fetch all rates and retrieve the specific currency
@@ -53,6 +57,8 @@ public class ExchangeRateService {
         if (cacheManager.getCache("exchangeRates") != null) {
             var cacheValue = cacheManager.getCache("exchangeRates").get("rates");
             if (cacheValue != null) {
+                cacheAccessTracker.incrementAccessCount();
+
                 Object value = cacheValue.get();
                 if (value instanceof Map<?, ?>) {
                     // Safe unchecked cast with runtime type check
